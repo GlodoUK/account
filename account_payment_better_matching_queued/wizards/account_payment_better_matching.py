@@ -20,4 +20,4 @@ class AccountPaymentBetterMatching(models.TransientModel):
         records |= self.move_line_id
         records |= self.matched_move_line_ids
 
-        records.with_delay().reconcile()
+        records.with_delay().reconcile_queued()
