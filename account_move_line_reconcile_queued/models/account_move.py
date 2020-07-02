@@ -7,5 +7,5 @@ class AccountMoveLine(models.Model):
 
     @job(default_channel='root.account_move_line_reconcile_queued')
     @api.multi
-    def reconcile(self, writeoff_acc_id=False, writeoff_journal_id=False):
+    def reconcile_queued(self, writeoff_acc_id=False, writeoff_journal_id=False):
         self.reconcile(writeoff_acc_id, writeoff_journal_id)
