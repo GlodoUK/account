@@ -9,8 +9,8 @@
             <field name="priority_id">75</field>
             <field name="arch" type="xml">
                 <xpath expr="//footer" position="inside">
-                    <button class="btn" type="object" name="process_queued" string="Reconcile (Queued)" confirm="This is not balanced. This will result in partial matching. Do you wish to continue?" attrs="{'invisible': [('balanced', '!=', False)]}" />
-                    <button class="btn" type="object" name="process_queued" string="Reconcile (Queued)" confirm="Are you happy and wish to continue?" attrs="{'invisible': [('balanced', '!=', True)]}" />
+                    <button class="btn-primary" type="object" name="process_queued" string="Enqueue Reconcile" confirm="This is not balanced. This will result in partial matching. Do you wish to continue?" attrs="{'invisible': [('balanced', '!=', False)]}" />
+                    <button class="btn-primary" type="object" name="process_queued" string="Enqueue Reconcile" confirm="Are you happy and wish to continue?" attrs="{'invisible': [('balanced', '!=', True)]}" />
                 </xpath>
             </field>
         </record>
