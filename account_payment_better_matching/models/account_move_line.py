@@ -8,7 +8,6 @@ class AccountPayment(models.Model):
         default=0.0,
         string="Reconcile Override Amount",
         help="Amount to include in this reconciliation. Leave blank to reconcile full amount",
-        store=False,
     )
 
     @api.multi
@@ -50,4 +49,5 @@ class AccountPayment(models.Model):
 
         # Reconcile lines
         ret = self._reconcile_lines(debit_moves, credit_moves, field)
+        self.reconcile_override = 0
         return ret

@@ -17,7 +17,6 @@
                     <field name="currency_id" invisible="1"/>
                     <field name="amount_currency"/>
                     <field name="amount_residual_currency" sum="Total"/>
-                    <field name="reconcile_override"/>
                 </tree>
             </field>
         </record>
