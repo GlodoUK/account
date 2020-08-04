@@ -1,1 +1,1 @@
-from . import account_payment
+from . import account_payment, account_move_line

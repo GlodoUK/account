@@ -79,6 +79,7 @@
                                     <field name="company_currency_id" invisible="1"/>
                                     <field name="amount_currency"/>
                                     <field name="amount_residual_currency"/>
+                                    <field name="residual_override"/>
                                     <field name="currency_id" invisible="1" sum="Total"/>
                                 </tree>
                             </field>
