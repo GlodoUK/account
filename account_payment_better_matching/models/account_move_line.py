@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 
 
-class AccountPayment(models.Model):
+class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
     reconcile_override = fields.Monetary(
