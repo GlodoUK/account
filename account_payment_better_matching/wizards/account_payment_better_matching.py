@@ -78,10 +78,36 @@ class AccountPaymentBetterMatching(models.TransientModel):
 
     balanced = fields.Boolean(compute="_compute_balanced")
 
-    @api.depends('matched_move_line_ids')
+    partial_reconcile = fields.Boolean(string="Manually Assign Amounts")
+
+    @api.onchange('partial_reconcile')
+    def _update_override_amounts(self):
+        for record in self:
+            lines = record.matched_move_line_ids
+            for line in lines:
+                if line.currency_id and line.currency_id != line.company_id.currency_id:
+                    line.reconcile_override = line.amount_residual_currency
+                else:
+                    line.reconcile_override = line.amount_residual
+
+    @api.depends('matched_move_line_ids','partial_reconcile')
     def _compute_matched_total_signed(self):
         for record in self:
-            record.matched_amount_signed = sum(record.matched_move_line_ids.mapped('amount_residual'))
+            lines = record.matched_move_line_ids
+            total = 0
+            for line in lines:
+                if self.partial_reconcile:
+                    if line.currency_id and line.currency_id != line.company_id.currency_id:
+                        total += line.currency_id._convert(line.reconcile_override,line.company_id.currency_id,line.company_id,line.date)
+                    else:
+                        total += line.reconcile_override
+                else:
+                    if line.currency_id and line.currency_id != line.company_id.currency_id:
+                        total += line.amount_residual_currency
+                    else:
+                        total += line.amount_residual
+            record.matched_amount_signed = total
+
 
     @api.depends('payment_id')
     def _compute_payment_amount(self):
@@ -129,4 +155,7 @@ class AccountPaymentBetterMatching(models.TransientModel):
         records |= self.move_line_id
         records |= self.matched_move_line_ids
 
-        records.reconcile()
+        if self.partial_reconcile:
+            records.partial_reconcile()
+        else:
+            records.reconcile()

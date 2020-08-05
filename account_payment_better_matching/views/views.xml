@@ -12,6 +12,10 @@
                     <button class="oe_stat_button" name="open_payment_matching_screen_better" string="Payment Matching - Manual" type="object" attrs="{'invisible':[('move_reconciled','=',True)]}" icon="fa-university"/>
                 </xpath>
 
+                <xpath expr="//field[@name='amount']" position="after">
+
+                </xpath>
+
             </field>
         </record>
 
