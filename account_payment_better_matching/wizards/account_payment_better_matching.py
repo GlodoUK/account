@@ -80,6 +80,17 @@ class AccountPaymentBetterMatching(models.TransientModel):
 
     partial_reconcile = fields.Boolean(string="Manually Assign Amounts")
 
+    amount_unmatched = fields.Monetary(compute="_compute_matched_total_signed",currency_field="company_currency_id")
+
+    @api.onchange("move_line_id")
+    def _onchange_move_line_id(self):
+        domain = [('partner_id', '=', self.partner_id.id), ('reconciled', '=', False), ('account_id', '=', self.account_id.id), ('id', '!=', self.move_line_id.id)]
+        if self.move_line_id.credit:
+            domain += [("debit",">",0)]
+        else:
+            domain += [("credit",">",0)]
+        return {'domain':{'matched_move_line_ids': domain}}
+
     @api.onchange('partial_reconcile')
     def _update_override_amounts(self):
         for record in self:
@@ -107,6 +118,7 @@ class AccountPaymentBetterMatching(models.TransientModel):
                     else:
                         total += line.amount_residual
             record.matched_amount_signed = total
+            record.amount_unmatched = record.move_line_residual + record.matched_amount_signed
 
 
     @api.depends('payment_id')

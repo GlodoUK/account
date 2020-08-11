@@ -54,11 +54,13 @@ class AccountMoveLine(models.Model):
             # and thus the amount_residual are not recomputed, hence we have to do it manually.
             debit_moves[0].amount_residual -= temp_amount_residual
             debit_moves[0].amount_residual_currency -= temp_amount_residual_currency
-            debit_moves -= debit_move
+            if override_move == debit_move or debit_moves[0].amount_residual == 0:
+                debit_moves -= debit_move
 
             credit_moves[0].amount_residual += temp_amount_residual
             credit_moves[0].amount_residual_currency += temp_amount_residual_currency
-            credit_moves -= credit_move
+            if override_move == credit_move or credit_moves[0].amount_residual == 0:
+                credit_moves -= credit_move
             #Check for the currency and amount_currency we can set
             currency = False
             amount_reconcile_currency = 0
@@ -127,6 +129,7 @@ class AccountMoveLine(models.Model):
             field = 'amount_residual_currency'
         # Reconcile lines
         ret = self._reconcile_lines_partial(debit_moves, credit_moves, field)
+        self.write({"reconcile_override": 0})
         return ret
 
 
@@ -154,5 +157,4 @@ class AccountMoveLine(models.Model):
             writeoff_to_reconcile = remaining_moves._create_writeoff([writeoff_vals])
             #add writeoff line to reconcile algorithm and finish the reconciliation
             remaining_moves = (remaining_moves + writeoff_to_reconcile).auto_reconcile_lines()
-        # Check if reconciliation is total or needs an exchange rate entry to be created
         return True

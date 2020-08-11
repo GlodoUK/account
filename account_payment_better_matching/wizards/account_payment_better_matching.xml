@@ -55,6 +55,7 @@
 
                                 <field name="company_currency_id" invisible="1"/>
                                 <field name="matched_amount_signed"/>
+                                <field name="amount_unmatched"/>
 
                                 <field name="balanced"/>
                                 <field name="partial_reconcile"/>
