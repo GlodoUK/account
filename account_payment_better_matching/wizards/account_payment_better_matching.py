@@ -4,55 +4,43 @@ from odoo.tools import float_is_zero
 
 
 class AccountPaymentBetterMatching(models.TransientModel):
-    _name = 'account.payment.better.matching'
+    _name = "account.payment.better.matching"
 
     payment_id = fields.Many2one(
-        'account.payment',
-        domain=[('move_reconciled', '=', False)],
-        required=True
+        "account.payment", domain=[("move_reconciled", "=", False)], required=True
     )
 
-    payment_currency_id = fields.Many2one(
-        related="payment_id.currency_id"
-    )
+    payment_currency_id = fields.Many2one(related="payment_id.currency_id")
 
     payment_amount = fields.Monetary(
-        compute="_compute_payment_amount",
-        currency_field="payment_currency_id"
+        compute="_compute_payment_amount", currency_field="payment_currency_id"
     )
 
     payment_amount_signed = fields.Monetary(
-        related="payment_id.amount",
-        currency_field="payment_currency_id"
+        related="payment_id.amount", currency_field="payment_currency_id"
     )
 
     partner_id = fields.Many2one(
-        related="payment_id.partner_id",
-        string="Payment Partner",
-        store=False
+        related="payment_id.partner_id", string="Payment Partner", store=False
     )
 
-    mode = fields.Selection(
-        related="payment_id.partner_type",
-        store=False
-    )
+    mode = fields.Selection(related="payment_id.partner_type", store=False)
 
     move_line_id = fields.Many2one(
-        'account.move.line',
+        "account.move.line",
         compute="_compute_move_line_id",
         string="Payment Move Line",
         required=True,
     )
 
     move_line_residual = fields.Monetary(
-        related="move_line_id.amount_residual",
-        currency_field="company_currency_id"
+        related="move_line_id.amount_residual", currency_field="company_currency_id"
     )
 
     account_id = fields.Many2one(
         related="move_line_id.account_id",
         string="Payment Move Line Account",
-        store=False
+        store=False,
     )
 
     matched_move_line_ids = fields.Many2many(
@@ -73,15 +61,18 @@ class AccountPaymentBetterMatching(models.TransientModel):
     )
 
     company_currency_id = fields.Many2one(
-        related='move_line_id.account_id.company_id.currency_id',
+        related="move_line_id.account_id.company_id.currency_id",
     )
 
     balanced = fields.Boolean(compute="_compute_balanced")
 
     partial_reconcile = fields.Boolean(string="Manually Assign Amounts")
 
-    amount_unmatched = fields.Monetary(compute="_compute_matched_total_signed",currency_field="company_currency_id")
+    amount_unmatched = fields.Monetary(
+        compute="_compute_matched_total_signed", currency_field="company_currency_id"
+    )
 
+    """
     @api.onchange("move_line_id")
     def _onchange_move_line_id(self):
         domain = [('partner_id', '=', self.partner_id.id), ('reconciled', '=', False), ('account_id', '=', self.account_id.id), ('id', '!=', self.move_line_id.id)]
@@ -90,8 +81,9 @@ class AccountPaymentBetterMatching(models.TransientModel):
         else:
             domain += [("credit",">",0)]
         return {'domain':{'matched_move_line_ids': domain}}
+    """
 
-    @api.onchange('partial_reconcile')
+    @api.onchange("partial_reconcile")
     def _update_override_amounts(self):
         for record in self:
             lines = record.matched_move_line_ids
@@ -101,27 +93,39 @@ class AccountPaymentBetterMatching(models.TransientModel):
                 else:
                     line.reconcile_override = line.amount_residual
 
-    @api.depends('matched_move_line_ids','partial_reconcile')
+    @api.depends("matched_move_line_ids", "partial_reconcile")
     def _compute_matched_total_signed(self):
         for record in self:
             lines = record.matched_move_line_ids
             total = 0
             for line in lines:
                 if self.partial_reconcile:
-                    if line.currency_id and line.currency_id != line.company_id.currency_id:
-                        total += line.currency_id._convert(line.reconcile_override,line.company_id.currency_id,line.company_id,line.date)
+                    if (
+                        line.currency_id
+                        and line.currency_id != line.company_id.currency_id
+                    ):
+                        total += line.currency_id._convert(
+                            line.reconcile_override,
+                            line.company_id.currency_id,
+                            line.company_id,
+                            line.date,
+                        )
                     else:
                         total += line.reconcile_override
                 else:
-                    if line.currency_id and line.currency_id != line.company_id.currency_id:
+                    if (
+                        line.currency_id
+                        and line.currency_id != line.company_id.currency_id
+                    ):
                         total += line.amount_residual_currency
                     else:
                         total += line.amount_residual
             record.matched_amount_signed = total
-            record.amount_unmatched = record.move_line_residual + record.matched_amount_signed
+            record.amount_unmatched = (
+                record.move_line_residual + record.matched_amount_signed
+            )
 
-
-    @api.depends('payment_id')
+    @api.depends("payment_id")
     def _compute_payment_amount(self):
         for record in self:
             if not record.payment_id:
@@ -134,7 +138,7 @@ class AccountPaymentBetterMatching(models.TransientModel):
 
             record.payment_amount = amount
 
-    @api.depends('payment_id')
+    @api.depends("payment_id")
     def _compute_move_line_id(self):
         for record in self:
             if not record.payment_id:
@@ -147,10 +151,13 @@ class AccountPaymentBetterMatching(models.TransientModel):
                     record.move_line_id = move_line.id
                     break
 
-    @api.depends('move_line_residual', 'matched_amount_signed')
+    @api.depends("move_line_residual", "matched_amount_signed")
     def _compute_balanced(self):
         for record in self:
-            record.balanced = float_is_zero(record.move_line_residual + record.matched_amount_signed, record.company_currency_id.decimal_places)
+            record.balanced = float_is_zero(
+                record.move_line_residual + record.matched_amount_signed,
+                record.company_currency_id.decimal_places,
+            )
 
     def process(self):
         if not self.partner_id:
@@ -162,12 +169,12 @@ class AccountPaymentBetterMatching(models.TransientModel):
         if not self.matched_move_line_ids:
             raise UserError(_("No moves selected for reconciliation"))
 
-        records = self.env['account.move.line']
+        records = self.env["account.move.line"]
 
         records |= self.move_line_id
         records |= self.matched_move_line_ids
 
         if self.partial_reconcile:
-            records.partial_reconcile()
+            records.partial_reconcile(self.move_line_id)
         else:
             records.reconcile()

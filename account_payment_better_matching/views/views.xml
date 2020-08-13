@@ -9,7 +9,8 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//button[@name='open_payment_matching_screen']" position="after">
-                    <button class="oe_stat_button" name="open_payment_matching_screen_better" string="Payment Matching - Manual" type="object" attrs="{'invisible':[('move_reconciled','=',True)]}" icon="fa-university"/>
+                    <button class="oe_stat_button" name="open_payment_matching_screen_better" string="Advanced Matching" type="object" attrs="{'invisible':[('move_reconciled','=',True)]}" icon="fa-university"/>
+                    <button class="oe_stat_button" name="open_payment_matching_screen_result" string="Matched Items" type="object" icon="fa-balance-scale"/>
                 </xpath>
 
                 <xpath expr="//field[@name='amount']" position="after">
