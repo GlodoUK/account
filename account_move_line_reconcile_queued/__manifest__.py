@@ -1,5 +1,5 @@
 {
-    'version': "12.0.1.0.0",
+    'version': "12.0.1.1.0",
     'name': "account_move_line_reconcile_queued",
     'summary': "Account move line reconcile queued",
     'category': "Finance",
