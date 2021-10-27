@@ -5,7 +5,7 @@
     """,
     "author": "Glodo",
     "license": "Other proprietary",
-    "website": "https://www.glodo.uk/",
+    "website": "https://glodo.uk/",
     "category": "Invoicing &amp; Payments",
     "version": "14.0.1.0.0",
     "depends": [
