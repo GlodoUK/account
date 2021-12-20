@@ -66,30 +66,32 @@ class SaleOrderLine(models.Model):
         "price_reduce",
         "product_id",
         "product_uom_qty",
+        "product_uom",
         "qty_invoiced",
     )
     def _compute_credit_control_outstanding_amount_to_invoice(self):
         for line in self:
             amount_to_invoice = 0.0
 
-            # We do not use qty_to_invoice because we need to "count" this
-            # regardless of whether or not it is actually invoice-able.
-            # i.e. if the shipping policy is delivered, then it should still
-            # count the outstanding value even before the product is delivered.
-            uom_qty_to_consider = line.product_uom_qty - line.qty_invoiced
+            if line.product_id and line.product_uom:
+                # We do not use qty_to_invoice because we need to "count" this
+                # regardless of whether or not it is actually invoice-able.
+                # i.e. if the shipping policy is delivered, then it should still
+                # count the outstanding value even before the product is delivered.
+                uom_qty_to_consider = line.product_uom_qty - line.qty_invoiced
 
-            if (
-                line.state in ["sale", "done"]
-                and float_compare(
-                    uom_qty_to_consider,
-                    0.0,
-                    precision_rounding=line.product_uom.rounding,
-                )
-                != 0
-            ):
-                amount_to_invoice = float_round(
-                    line.price_reduce * uom_qty_to_consider,
-                    precision_rounding=line.product_uom.rounding,
-                )
+                if (
+                    line.state in ["sale", "done"]
+                    and float_compare(
+                        uom_qty_to_consider,
+                        0.0,
+                        precision_rounding=line.product_uom.rounding,
+                    )
+                    != 0
+                ):
+                    amount_to_invoice = float_round(
+                        line.price_reduce * uom_qty_to_consider,
+                        precision_rounding=line.product_uom.rounding,
+                    )
 
             line.credit_control_amount_to_invoice = amount_to_invoice
