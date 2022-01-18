@@ -11,7 +11,7 @@ class AccountTeam(models.TransientModel):
         string="Copy From",
         required=True,
         domain=lambda self: [
-            ("category_id", "=", self.env.ref("base.module_category_accounting").id)
+            ("category_id", "=", self.env.ref("base.module_category_accounting_accounting").id)
         ],
     )
     journal_ids = fields.Many2many(
@@ -38,7 +38,17 @@ class AccountTeam(models.TransientModel):
     def _get_group_vals(self):
         self.ensure_one()
 
-        menu_ids = self.copy_from_id.mapped("menu_access")
+        internal_group_id = self.env.ref("base.group_user")
+
+        source_group_ids = self.copy_from_id.mapped("implied_ids")
+        implied_ids = self.copy_from_id.mapped("implied_ids")
+        while implied_ids:
+            source_group_ids |= implied_ids
+            implied_ids = implied_ids.mapped("implied_ids")
+
+        source_group_ids -= internal_group_id
+
+        menu_ids = source_group_ids.mapped("menu_access")
         menu_ids |= self.extra_menu_ids
 
         access_rules = [
@@ -46,7 +56,10 @@ class AccountTeam(models.TransientModel):
                 0,
                 0,
                 {
-                    "name": "Accounting Team: {}".format(access_id.name),
+                    "name": "Accounting Team - {}: {}".format(
+                        self.name,
+                        access_id.name
+                    ),
                     "model_id": access_id.model_id.id,
                     "perm_read": access_id.perm_read,
                     "perm_write": access_id.perm_write,
@@ -54,7 +67,7 @@ class AccountTeam(models.TransientModel):
                     "perm_unlink": access_id.perm_unlink,
                 },
             )
-            for access_id in self.copy_from_id.mapped("model_access")
+            for access_id in source_group_ids.mapped("model_access")
         ]
 
         excluded_rule_models = [
@@ -63,7 +76,7 @@ class AccountTeam(models.TransientModel):
             self.env.ref("account.model_account_move_line").id,
         ]
 
-        to_copy_rule_ids = self.copy_from_id.mapped("rule_groups").filtered(
+        to_copy_rule_ids = source_group_ids.mapped("rule_groups").filtered(
             lambda r: r.model_id.id not in excluded_rule_models
         )
 
@@ -72,7 +85,7 @@ class AccountTeam(models.TransientModel):
                 0,
                 0,
                 {
-                    "name": "Accounting Team: {}".format(rule_group_id.name),
+                    "name": "Accounting Team - {}: {}".format(self.name, rule_group_id.name),
                     "model_id": rule_group_id.model_id.id,
                     "domain_force": rule_group_id.domain_force,
                     "perm_read": rule_group_id.perm_read,
@@ -134,6 +147,7 @@ class AccountTeam(models.TransientModel):
             "model_access": access_rules,
             "menu_access": [(4, g.id, False) for g in menu_ids],
             "rule_groups": rule_groups,
+            "implied_ids": [(4, internal_group_id.id, False)],
         }
 
     def action_apply(self):
