@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="view_account_team_form">
+      <field name="name">view_account_team_form</field>
+      <field name="model">account.team.wizard</field>
+      <field name="arch" type="xml">
+          <form>
+              <group>
+                  <field name="name" />
+                  <field name="journal_ids" widget="many2many_tags" />
+                  <field name="user_ids" widget="many2many_tags" />
+                  <field name="extra_menu_ids" widget="many2many_tags" />
+                  <field name="comment" />
+              </group>
+              <group>
+                  <p
+                            colspan="2"
+                        >This wizard will assist you in creating and applying custom accounting groups.</p>
+                  <p
+                            colspan="2"
+                        >This will create a new group and associated access rules to only permit users access to specific journals.</p>
+                  <p
+                            colspan="2"
+                        >By default it inherits from the base invoicing group, and then extra permissions are layered on top.</p>
+              </group>
+              <footer>
+                  <button
+                            name="action_apply"
+                            type="object"
+                            string="Create and Apply"
+                            class="oe_highlight"
+                        />
+              </footer>
+          </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_account_team_act_window">
+      <field name="name">Account Team Wizard</field>
+      <field name="res_model">account.team.wizard</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+  </data>
+</odoo>
