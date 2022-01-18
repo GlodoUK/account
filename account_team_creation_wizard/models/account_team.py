@@ -6,6 +6,14 @@ class AccountTeam(models.TransientModel):
     _description = "Accounting Team Creation Wizard"
 
     name = fields.Char(required=True)
+    copy_from_id = fields.Many2one(
+        "res.groups",
+        string="Copy From",
+        required=True,
+        domain=lambda self: [
+            ("category_id", "=", self.env.ref("base.module_category_accounting").id)
+        ],
+    )
     journal_ids = fields.Many2many(
         "account.journal", required=True, string="Journals to Allow Access to"
     )
@@ -30,9 +38,7 @@ class AccountTeam(models.TransientModel):
     def _get_group_vals(self):
         self.ensure_one()
 
-        copy_from_id = self.env.ref("account.group_account_invoice")
-
-        menu_ids = copy_from_id.mapped("menu_access")
+        menu_ids = self.copy_from_id.mapped("menu_access")
         menu_ids |= self.extra_menu_ids
 
         access_rules = [
@@ -48,7 +54,7 @@ class AccountTeam(models.TransientModel):
                     "perm_unlink": access_id.perm_unlink,
                 },
             )
-            for access_id in copy_from_id.mapped("model_access")
+            for access_id in self.copy_from_id.mapped("model_access")
         ]
 
         excluded_rule_models = [
@@ -57,7 +63,7 @@ class AccountTeam(models.TransientModel):
             self.env.ref("account.model_account_move_line").id,
         ]
 
-        to_copy_rule_ids = copy_from_id.mapped("rule_groups").filtered(
+        to_copy_rule_ids = self.copy_from_id.mapped("rule_groups").filtered(
             lambda r: r.model_id.id not in excluded_rule_models
         )
 
