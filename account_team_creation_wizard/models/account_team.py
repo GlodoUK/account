@@ -13,12 +13,24 @@ class AccountTeam(models.TransientModel):
         domain=lambda self: [
             ("category_id", "=", self.env.ref("base.module_category_accounting_accounting").id)
         ],
+        ondelete='cascade'
     )
     journal_ids = fields.Many2many(
-        "account.journal", required=True, string="Journals to Allow Access to"
+        "account.journal",
+        required=True,
+        string="Journals to Allow Access to",
+        ondelete='cascade',
     )
-    user_ids = fields.Many2many("res.users", string="Apply to Users")
-    extra_menu_ids = fields.Many2many("ir.ui.menu", string="Extra Menus")
+    user_ids = fields.Many2many(
+        "res.users",
+        string="Apply to Users",
+        ondelete='cascade'
+    )
+    extra_menu_ids = fields.Many2many(
+        "ir.ui.menu",
+        string="Extra Menus",
+        ondelete='cascade'
+    )
     comment = fields.Text(string="Note")
 
     def _get_account_journal_domain_force(self):
