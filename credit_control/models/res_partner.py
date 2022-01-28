@@ -52,12 +52,20 @@ class ResPartner(models.Model):
                             account_move_line.amount_residual * -1
                     end)
                 FROM {tables}
-                LEFT JOIN account_account a ON (account_move_line.account_id=a.id)
-                LEFT JOIN account_account_type act ON (a.user_type_id=act.id)
-                WHERE act.type IN ('receivable','payable')
-                AND account_move_line__move_id.commercial_partner_id IN %s
-                AND account_move_line.reconciled IS NOT TRUE
-                {where_clause}
+                INNER JOIN account_move AS account_move_line__move_id ON
+                    (account_move_line__move_id.id=account_move_line.move_id)
+                LEFT JOIN account_account a ON
+                    (account_move_line.account_id=a.id)
+                LEFT JOIN account_account_type act ON
+                    (a.user_type_id=act.id)
+                WHERE
+                    act.type IN (
+                        'receivable',
+                        'payable'
+                    )
+                    AND account_move_line__move_id.commercial_partner_id IN %s
+                    AND account_move_line.reconciled IS NOT TRUE
+                    {where_clause}
                 GROUP BY
                     account_move_line__move_id.commercial_partner_id
                 """.format(
