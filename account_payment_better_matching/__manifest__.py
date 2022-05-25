@@ -11,7 +11,8 @@
     ],
     "data": [
         "views/views.xml",
-        "wizards/account_payment_better_matching.xml" "security/ir.model.access.csv",
+        "wizards/account_payment_better_matching.xml",
+        "security/ir.model.access.csv",
     ],
     "demo": [],
 }
