@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class AccountMoveLine(models.Model):
@@ -11,7 +11,6 @@ class AccountMoveLine(models.Model):
         currency_field="currency_id",
     )
 
-    @api.multi
     def _reconcile_lines_partial(self, payment_move, debit_moves, credit_moves, field):
         """This function loops on the 2 recordsets given as parameter as long as it
         can find a debit and a credit to reconcile together. It returns the recordset of the
@@ -162,7 +161,6 @@ class AccountMoveLine(models.Model):
 
         return debit_moves + credit_moves
 
-    @api.multi
     def auto_reconcile_lines_partial(self, payment_move):
         # Create list of debit and list of credit move ordered by date-currency
         debit_moves = self.filtered(lambda r: r.debit != 0 or r.amount_currency > 0)
@@ -195,7 +193,6 @@ class AccountMoveLine(models.Model):
         self.write({"reconcile_override": 0})
         return ret
 
-    @api.multi
     def partial_reconcile(
         self, payment_move, writeoff_acc_id=False, writeoff_journal_id=False
     ):

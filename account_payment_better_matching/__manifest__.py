@@ -9,6 +9,9 @@
     "depends": [
         "account",
     ],
-    "data": ["views/views.xml", "wizards/account_payment_better_matching.xml"],
+    "data": [
+        "views/views.xml",
+        "wizards/account_payment_better_matching.xml" "security/ir.model.access.csv",
+    ],
     "demo": [],
 }
