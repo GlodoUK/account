@@ -9,7 +9,7 @@
                 <field name="date" />
                 <field name="partner_id" />
                 <field name="name" />
-                <field name="invoice_id" />
+                <field name="move_id" />
                 <field name="amount_residual" sum="Total" />
                 <field name="company_currency_id" invisible="1" />
                 <field name="currency_id" invisible="1" />
@@ -27,13 +27,12 @@
         <field name="priority">20</field>
         <field name="arch" type="xml">
             <xpath expr="//search" position="inside">
-                <filter string="Date" name="filter_date" date="date" />
-                <filter
+                <!-- <filter
                     string="Invoice Date"
                     name="filter_invoice_date"
                     date="invoice_date"
-                />
-                <field name="invoice_id" />
+                /> -->
+                <field name="move_id" />
             </xpath>
         </field>
     </record>
@@ -70,7 +69,7 @@
                                 widget="many2many_list"
                                 readonly="0"
                                 options="{'no_quick_create':True}"
-                                domain="[('partner_id', '=', partner_id), ('reconciled', '=', False), ('account_id', '=', account_id), ('id', '!=', move_line_id)]"
+                                domain="[('move_id.move_type', 'in', ['out_invoice', 'in_refund']),('partner_id', '=', partner_id), ('amount_residual', '!=', 0), ('id', '!=', move_line_id)]"
                                 context="{
                                 'tree_view_ref': 'account_payment_better_matching.account_move_line_tree',
                                 'search_view_ref': 'account_payment_better_matching.account_move_line_search'
@@ -80,7 +79,7 @@
                                 <field name="date" readonly="True" />
                                 <field name="partner_id" readonly="True" />
                                 <field name="name" readonly="True" />
-                                <field name="invoice_id" readonly="True" />
+                                <field name="move_id" readonly="True" />
                                 <field
                                         name="amount_residual"
                                         sum="Total"

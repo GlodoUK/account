@@ -6,16 +6,14 @@
         <field name="priority">75</field>
         <field name="arch" type="xml">
 
-            <xpath
-                expr="//button[@name='open_payment_matching_screen']"
-                position="after"
-            >
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="amount_residual" invisible="1" />
                 <button
                     class="oe_stat_button"
                     name="open_payment_matching_screen_better"
                     string="Advanced Matching"
                     type="object"
-                    attrs="{'invisible':[('move_reconciled','=',True)]}"
+                    attrs="{'invisible':['|', ('state','!=', 'posted'),('is_reconciled','=', True)]}"
                     icon="fa-university"
                 />
                 <button
@@ -24,11 +22,8 @@
                     string="Matched Items"
                     type="object"
                     icon="fa-balance-scale"
+                    attrs="{'invisible':[('state','!=', 'posted')]}"
                 />
-            </xpath>
-
-            <xpath expr="//field[@name='amount']" position="after">
-
             </xpath>
 
         </field>

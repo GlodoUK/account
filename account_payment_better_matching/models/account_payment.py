@@ -10,7 +10,7 @@ class AccountPayment(models.Model):
 
         # Open reconciliation view for customers/suppliers
         move_line_id = False
-        for move_line in self.move_line_ids:
+        for move_line in self.line_ids:
             if move_line.account_id.reconcile:
                 move_line_id = move_line.id
                 break
@@ -39,7 +39,7 @@ class AccountPayment(models.Model):
         self.ensure_one()
         [action] = self.env.ref("account.action_account_moves_all_a").read()
         ids = []
-        for aml in self.mapped("move_line_ids"):
+        for aml in self.mapped("line_ids"):
             if aml.account_id.reconcile:
                 ids.extend(
                     [r.debit_move_id.id for r in aml.matched_debit_ids]

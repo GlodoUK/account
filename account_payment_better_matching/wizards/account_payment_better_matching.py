@@ -49,9 +49,6 @@ class AccountPaymentBetterMatching(models.TransientModel):
         "wizard_id",
         "move_line_id",
         ondelete="cascade",
-        create=True,
-        delete=True,
-        edit=True,
     )
 
     matched_amount_signed = fields.Monetary(
@@ -127,7 +124,7 @@ class AccountPaymentBetterMatching(models.TransientModel):
                         total += line.amount_residual
             record.matched_amount_signed = total
             record.amount_unmatched = (
-                record.move_line_residual + record.matched_amount_signed
+                record.move_line_residual - record.matched_amount_signed
             )
 
     @api.depends("payment_id")
@@ -151,7 +148,7 @@ class AccountPaymentBetterMatching(models.TransientModel):
                 continue
 
             record.move_line_id = None
-            for move_line in record.payment_id.move_line_ids:
+            for move_line in record.payment_id.line_ids:
                 if move_line.account_id.reconcile:
                     record.move_line_id = move_line.id
                     break
@@ -160,7 +157,7 @@ class AccountPaymentBetterMatching(models.TransientModel):
     def _compute_balanced(self):
         for record in self:
             record.balanced = float_is_zero(
-                record.move_line_residual + record.matched_amount_signed,
+                record.move_line_residual - record.matched_amount_signed,
                 record.company_currency_id.decimal_places,
             )
 
