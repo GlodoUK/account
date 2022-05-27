@@ -87,13 +87,8 @@ class AccountPaymentBetterMatching(models.TransientModel):
 
     @api.onchange("partial_reconcile")
     def _update_override_amounts(self):
-        for record in self:
-            lines = record.matched_move_line_ids
-            for line in lines:
-                if line.currency_id and line.currency_id != line.company_id.currency_id:
-                    line.reconcile_override = line.amount_residual_currency
-                else:
-                    line.reconcile_override = line.amount_residual
+        for line in self.matched_move_line_ids:
+            line.reconcile_override = 0
 
     @api.depends("matched_move_line_ids", "partial_reconcile")
     def _compute_matched_total_signed(self):
@@ -102,30 +97,18 @@ class AccountPaymentBetterMatching(models.TransientModel):
             total = 0
             for line in lines:
                 if self.partial_reconcile:
-                    if (
-                        line.currency_id
-                        and line.currency_id != line.company_id.currency_id
-                    ):
-                        total += line.currency_id._convert(
-                            line.reconcile_override,
-                            line.company_id.currency_id,
-                            line.company_id,
-                            line.date,
-                        )
-                    else:
-                        total += line.reconcile_override
+                    total += line.reconcile_override
                 else:
-                    if (
-                        line.currency_id
-                        and line.currency_id != line.company_id.currency_id
-                    ):
-                        total += line.amount_residual_currency
-                    else:
-                        total += line.amount_residual
+                    total += line.amount_residual
             record.matched_amount_signed = total
-            record.amount_unmatched = (
-                record.move_line_residual - record.matched_amount_signed
-            )
+            if record.move_line_residual < 0:
+                record.amount_unmatched = (
+                    record.move_line_residual + record.matched_amount_signed
+                )
+            else:
+                record.amount_unmatched = (
+                    record.move_line_residual - record.matched_amount_signed
+                )
 
     @api.depends("payment_id")
     def _compute_payment_amount(self):
@@ -148,16 +131,20 @@ class AccountPaymentBetterMatching(models.TransientModel):
                 continue
 
             record.move_line_id = None
-            for move_line in record.payment_id.line_ids:
-                if move_line.account_id.reconcile:
-                    record.move_line_id = move_line.id
-                    break
+            if record.payment_id.payment_type == "outbound":
+                record.move_line_id = record.payment_id.line_ids.filtered(
+                    lambda r: r.account_id.reconcile and r.debit > 0
+                ).id
+            else:
+                record.move_line_id = record.payment_id.line_ids.filtered(
+                    lambda r: r.account_id.reconcile and r.credit > 0
+                ).id
 
     @api.depends("move_line_residual", "matched_amount_signed")
     def _compute_balanced(self):
         for record in self:
             record.balanced = float_is_zero(
-                record.move_line_residual - record.matched_amount_signed,
+                record.amount_unmatched,
                 record.company_currency_id.decimal_places,
             )
 
@@ -176,7 +163,11 @@ class AccountPaymentBetterMatching(models.TransientModel):
         records |= self.move_line_id
         records |= self.matched_move_line_ids
 
-        if self.partial_reconcile:
-            records.partial_reconcile(self.move_line_id)
-        else:
-            records.reconcile()
+        context = dict(self._context.copy())
+        context.update(
+            {
+                "partial_reconcile": self.partial_reconcile,
+                "payment_move_line": self.move_line_id,
+            }
+        )
+        records.with_context(**context).reconcile()

@@ -10,10 +10,14 @@ class AccountPayment(models.Model):
 
         # Open reconciliation view for customers/suppliers
         move_line_id = False
-        for move_line in self.line_ids:
-            if move_line.account_id.reconcile:
-                move_line_id = move_line.id
-                break
+        if self.payment_type == "outbound":
+            move_line_id = self.line_ids.filtered(
+                lambda r: r.account_id.reconcile and r.debit > 0
+            ).id
+        else:
+            move_line_id = self.line_ids.filtered(
+                lambda r: r.account_id.reconcile and r.credit > 0
+            ).id
         if not self.partner_id:
             raise UserError(_("Payments without a partner can't be matched"))
 
