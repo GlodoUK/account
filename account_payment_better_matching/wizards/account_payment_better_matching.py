@@ -85,10 +85,11 @@ class AccountPaymentBetterMatching(models.TransientModel):
         return {'domain':{'matched_move_line_ids': domain}}
     """
 
-    @api.onchange("partial_reconcile")
+    @api.onchange("partial_reconcile", "matched_move_line_ids")
     def _update_override_amounts(self):
         for line in self.matched_move_line_ids:
-            line.reconcile_override = 0
+            if line.reconcile_override == 0:
+                line.reconcile_override = line.amount_residual
 
     @api.depends("matched_move_line_ids", "partial_reconcile")
     def _compute_matched_total_signed(self):

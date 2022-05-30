@@ -24,9 +24,9 @@ class AccountMoveLine(models.Model):
                 continue
             line_currency_amount = override_amount
             if line.currency_id and line.currency_id != line.company_currency_id:
-                line_currency_amount = line.currency_id._convert(
+                line_currency_amount = line.company_currency_id._convert(
                     override_amount,
-                    line.company_id.currency_id,
+                    line.currency_id,
                     line.company_id,
                     line.date,
                 )
