@@ -20,7 +20,7 @@ class AccountMove(models.Model):
         if not args:
             args = []
 
-        if self.env.user.has_group(
+        if not self.env.su and self.env.user.has_group(
             "account_journal_restrict_by_user.group_restrict_account_journal"
         ):
             args += [("journal_id.restricted_user_ids", "in", self.env.user.ids)]
@@ -31,18 +31,17 @@ class AccountMove(models.Model):
         if fields is None:
             fields = []
 
-        if (
-            self.env.user.has_group(
+        should_restrict = (
+            not self.env.su and self.env.user.has_group(
                 "account_journal_restrict_by_user.group_restrict_account_journal"
             )
-            and "journal_id" not in fields
-        ):
+        )
+
+        if (should_restrict and "journal_id" not in fields):
             fields += ["journal_id"]
 
         moves = super().read(fields=fields, load=load)
-        if self.env.user.has_group(
-            "account_journal_restrict_by_user.group_restrict_account_journal"
-        ):
+        if should_restrict:
             allowed_journals = self.env["account.journal"].search(
                 [("restricted_user_ids", "in", self.env.user.ids)]
             )
@@ -60,7 +59,7 @@ class AccountMove(models.Model):
         if not domain:
             domain = []
 
-        if self.env.user.has_group(
+        if not self.env.su and self.env.user.has_group(
             "account_journal_restrict_by_user.group_restrict_account_journal"
         ):
             domain += [("journal_id.restricted_user_ids", "in", self.env.user.ids)]

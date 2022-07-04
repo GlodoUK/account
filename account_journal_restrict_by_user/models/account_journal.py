@@ -40,7 +40,7 @@ class AccountJournal(models.Model):
         if not args:
             args = []
 
-        if self.env.user.has_group(
+        if not self.env.su and self.env.user.has_group(
             "account_journal_restrict_by_user.group_restrict_account_journal"
         ):
             args += [("restricted_user_ids", "in", self.env.user.ids)]
@@ -50,7 +50,7 @@ class AccountJournal(models.Model):
     def read(self, fields=None, load="_classic_read"):
         journals = super().read(fields=fields, load=load)
 
-        if self.env.user.has_group(
+        if not self.env.su and self.env.user.has_group(
             "account_journal_restrict_by_user.group_restrict_account_journal"
         ):
             allowed_journals = self.env["account.journal"].search(
@@ -70,7 +70,7 @@ class AccountJournal(models.Model):
         if not domain:
             domain = []
 
-        if self.env.user.has_group(
+        if not self.env.su and self.env.user.has_group(
             "account_journal_restrict_by_user.group_restrict_account_journal"
         ):
             domain += [("restricted_user_ids", "in", self.env.user.ids)]
