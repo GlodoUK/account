@@ -1,9 +1,0 @@
-<?xml version='1.0' encoding='utf-8' ?>
-<odoo>
-    <menuitem
-        name="Account Team Creation Wizard"
-        id="menu_account_team"
-        parent="account.menu_finance_configuration"
-        action="action_account_team_act_window"
-    />
-</odoo>

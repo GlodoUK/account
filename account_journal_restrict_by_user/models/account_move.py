@@ -31,13 +31,11 @@ class AccountMove(models.Model):
         if fields is None:
             fields = []
 
-        should_restrict = (
-            not self.env.su and self.env.user.has_group(
-                "account_journal_restrict_by_user.group_restrict_account_journal"
-            )
+        should_restrict = not self.env.su and self.env.user.has_group(
+            "account_journal_restrict_by_user.group_restrict_account_journal"
         )
 
-        if (should_restrict and "journal_id" not in fields):
+        if should_restrict and "journal_id" not in fields:
             fields += ["journal_id"]
 
         moves = super().read(fields=fields, load=load)

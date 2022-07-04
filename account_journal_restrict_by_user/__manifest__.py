@@ -11,4 +11,6 @@
         "views/account.xml",
     ],
     "license": "Other proprietary",
+    "author": "Glo Networks",
+    "website": "https://github.com/GlodoUK/account",
 }
