@@ -3,8 +3,8 @@
     "name": "account_payment_better_matching",
     "summary": "A better interface for bulk, but manual payment matching",
     "category": "Finance",
-    "author": "Glodo",
-    "website": "https://github.com/OCA/account",
+    "author": "Glo Networks",
+    "website": "https://github.com/GlodoUK/account",
     "license": "Other proprietary",
     "depends": [
         "account",

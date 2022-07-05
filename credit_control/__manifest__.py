@@ -3,9 +3,9 @@
     "summary": """
     Credit Control Policies
     """,
-    "author": "Glodo",
+    "author": "Glo Networks",
     "license": "Other proprietary",
-    "website": "https://github.com/OCA/account",
+    "website": "https://github.com/GlodoUK/account",
     "category": "Invoicing &amp; Payments",
     "version": "15.0.1.0.0",
     "depends": [
