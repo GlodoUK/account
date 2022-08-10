@@ -1,12 +1,12 @@
 {
-    'version': "12.0.1.1.0",
+    'version': "15.0.1.0.0",
     'name': "account_move_line_reconcile_queued",
     'summary': "Account move line reconcile queued",
     'category': "Finance",
     'images': [],
     'application': False,
 
-    'author': "Glo",
+    'author': "Glo Networks",
     'website': "https://glo.systems",
     'license': "Other proprietary",
 
