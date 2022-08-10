@@ -6,7 +6,7 @@
     "images": [],
     "application": False,
     "author": "Glo Networks",
-    "website": "https://glo.systems",
+    "website": "https://github.com/GlodoUK/account",
     "license": "Other proprietary",
     "depends": [
         "account",

@@ -1,4 +1,5 @@
 from odoo import api, models
+
 from odoo.addons.queue_job.job import job
 
 
