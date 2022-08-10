@@ -9,4 +9,22 @@
             </div>
         </div>
     </template>
+    <record model="ir.ui.view" id="sale_order_form_view">
+        <field name="name">sale_order_form_view</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="priority">75</field>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div[hasclass('oe_button_box')]" position="after">
+                <field name="credit_control_hold" invisible="1" />
+                <widget
+                    name="web_ribbon"
+                    text="Sale Held"
+                    bg_color="bg-danger"
+                    attrs="{'invisible': [('credit_control_hold', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
