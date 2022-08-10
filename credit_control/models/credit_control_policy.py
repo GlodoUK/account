@@ -15,7 +15,9 @@ class CreditControlPolicy(models.Model):
         string="Rules",
         context={"active_test": False},
     )
-    action = fields.Selection([("block", "Block")], default="block", required=True)
+    action = fields.Selection(
+        [("block", "Block"), ("hold", "Hold")], default="block", required=True
+    )
 
     rule_count = fields.Integer(compute="_compute_rule_count", store=True)
 
@@ -51,8 +53,24 @@ class CreditControlPolicy(models.Model):
             raise UserError(
                 _("Credit Control Policy: %s") % (",".join(res.mapped("name")))
             )
-
+        elif res and self.action == "hold":
+            if not sale_id.credit_control_hold:
+                self.post_todo_task(sale_id, res)
         return res
+
+    def post_todo_task(self, sale_id, res):
+        self.ensure_one()
+
+        task_vals = {
+            "note": _("Credit Control Policy: %s") % (",".join(res.mapped("name"))),
+            "user_id": self.env.user.id,
+            "date_deadline": fields.Date.today(),
+            "state": "open",
+            "activity_type_id": self.env.ref("credit_control.activity_sale_hold").id,
+            "res_id": sale_id.id,
+            "res_model_id": self.env.ref("sale.model_sale_order").id,
+        }
+        sale_id.credit_control_hold = self.env["mail.activity"].create(task_vals)
 
     def action_open_partners(self):
         self.ensure_one()
