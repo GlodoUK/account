@@ -13,7 +13,7 @@
         "queue_job",
     ],
     "external_dependencies": {"python": [], "bin": []},
-    "data": ["data/account_move_reconcile_job.xml"],
+    "data": ["data/account_move_line_reconcile_queued_data.xml"],
     "qweb": [],
     "demo": [],
     "post_load": None,
