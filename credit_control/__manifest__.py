@@ -11,6 +11,7 @@
     "depends": [
         "account",
         "sale",
+        "mail"
     ],
     "data": [
         "data/groups.xml",
