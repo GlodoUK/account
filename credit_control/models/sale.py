@@ -19,7 +19,9 @@ class SaleOrder(models.Model):
                 if record.with_context(**context)._check_credit_control():
                     return
                 else:
-                    return super(SaleOrder, self).action_confirm()
+                    confirmed_order = super(SaleOrder, self).action_confirm()
+                    confirmed_order.skip_credit_control_rules = False
+                    return confirmed_order
 
     def _check_credit_control(self, events=None):
         self.ensure_one()
