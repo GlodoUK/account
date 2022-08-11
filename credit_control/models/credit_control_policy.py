@@ -28,6 +28,15 @@ class CreditControlPolicy(models.Model):
     )
 
     partner_count = fields.Integer(compute="_compute_partner_count", store=True)
+    default = fields.Boolean(default=False)
+
+    @api.constrains("default")
+    def _check_default(self):
+        if self.default:
+            if self.search_count([("default", "=", True)]) > 1:
+                raise UserError(
+                    _("You can only have one default credit control policy.")
+                )
 
     @api.depends("rule_ids")
     def _compute_rule_count(self):

@@ -6,7 +6,7 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     credit_control_hold = fields.Many2one("mail.activity")
-    skip_credit_control_rules = fields.Boolean(string="Skip Credit Rules")
+    skip_credit_control_rules = fields.Boolean(string="Skip Credit Rules", copy=False)
 
     def action_confirm(self):
         for record in self:
@@ -19,7 +19,9 @@ class SaleOrder(models.Model):
                 if record.with_context(**context)._check_credit_control():
                     return
                 else:
-                    return super(SaleOrder, self).action_confirm()
+                    confirmed_order = super(SaleOrder, self).action_confirm()
+                    record.skip_credit_control_rules = False
+                    return confirmed_order
 
     def _check_credit_control(self, events=None):
         self.ensure_one()
@@ -36,7 +38,13 @@ class SaleOrder(models.Model):
         partner_id = self.partner_id.commercial_partner_id
 
         if not partner_id.credit_control_policy_id:
-            return
+            credit_control = self.env["credit.control.policy"].search(
+                [("default", "=", True)]
+            )
+            if credit_control:
+                partner_id.credit_control_policy_id = credit_control.id
+            else:
+                return
 
         return partner_id.sudo().credit_control_policy_id.check_rules(
             events, partner_id, self
