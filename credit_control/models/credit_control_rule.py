@@ -1,11 +1,4 @@
-import base64
-import datetime
-import re
-import time
-
-from dateutil import relativedelta, rrule
-
-from odoo import _, addons, api, exceptions, fields, models
+from odoo import _, api, exceptions, fields, models
 from odoo.tools import float_compare
 from odoo.tools.safe_eval import safe_eval
 
@@ -195,20 +188,10 @@ class CreditControlRule(models.Model):
             "sale_id": sale_id,
             "partner_id": partner_id,
             "env": self.env,
-            "time": time,
-            "datetime": datetime,
-            "relativedelta": relativedelta,
-            "rrule": rrule,
-            "base64": base64,
             "Warning": exceptions.Warning,
             "_": _,
             "ValueError": ValueError,
-            "re": re,
             "next": next,
-            "iter": iter,
-            "fields": fields,
-            "addons": addons,
-            "wdb": __import__("wdb"),
         }
 
         safe_eval(
