@@ -20,7 +20,7 @@ class SaleOrder(models.Model):
                     return
                 else:
                     confirmed_order = super(SaleOrder, self).action_confirm()
-                    confirmed_order.skip_credit_control_rules = False
+                    record.skip_credit_control_rules = False
                     return confirmed_order
 
     def _check_credit_control(self, events=None):
