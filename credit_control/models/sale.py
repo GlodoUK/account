@@ -37,7 +37,7 @@ class SaleOrder(models.Model):
 
         if not partner_id.credit_control_policy_id:
             credit_control = self.env["credit.control.policy"].search(
-                [("default", "==", True)]
+                [("default", "=", True)]
             )
             if credit_control:
                 partner_id.credit_control_policy_id = credit_control.id
