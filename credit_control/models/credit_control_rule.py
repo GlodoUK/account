@@ -1,6 +1,6 @@
 from odoo import _, api, exceptions, fields, models
 from odoo.tools import float_compare
-from odoo.tools.safe_eval import safe_eval
+from odoo.tools.safe_eval import pytz, safe_eval
 
 
 class CreditControlRule(models.Model):
@@ -192,6 +192,7 @@ class CreditControlRule(models.Model):
             "_": _,
             "ValueError": ValueError,
             "next": next,
+            "pytz": pytz,
         }
 
         safe_eval(
