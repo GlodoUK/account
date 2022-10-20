@@ -102,14 +102,9 @@ class AccountPaymentBetterMatching(models.TransientModel):
                 else:
                     total += line.amount_residual
             record.matched_amount_signed = total
-            if record.move_line_residual < 0:
-                record.amount_unmatched = (
-                    record.move_line_residual + record.matched_amount_signed
-                )
-            else:
-                record.amount_unmatched = (
-                    record.move_line_residual - record.matched_amount_signed
-                )
+            record.amount_unmatched = (
+                record.move_line_residual + record.matched_amount_signed
+            )
 
     @api.depends("payment_id")
     def _compute_payment_amount(self):
