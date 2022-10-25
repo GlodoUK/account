@@ -58,7 +58,7 @@
                 <field name="name" />
                 <field name="rule_count" />
                 <field name="partner_count" />
-                <field name="default"/>
+                <field name="default" />
             </tree>
         </field>
     </record>
@@ -89,7 +89,7 @@
                     <group>
                         <field name="action" />
                         <field name="active" widget="boolean_toggle" />
-                        <field name="default" widget="boolean_toggle"/>
+                        <field name="default" widget="boolean_toggle" />
                     </group>
                     <notebook>
                         <page string="Rules">

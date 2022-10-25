@@ -53,7 +53,7 @@ class AccountPayment(models.Model):
 
     def open_payment_matching_screen_result(self):
         self.ensure_one()
-        [action] = self.env.ref("account.action_account_moves_all_a").read()
+        [action] = self.env.ref("account.action_account_moves_all_a").sudo().read()
         ids = []
         for aml in self.mapped("line_ids"):
             if aml.account_id.reconcile:
