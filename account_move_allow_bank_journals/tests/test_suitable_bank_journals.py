@@ -24,13 +24,11 @@ class TestSuitableBankJournals(AccountTestInvoicingCommon):
         ]
 
         for move_type in move_types:
-            move = self.init_invoice(
-                move_type, products=self.product_a + self.product_b
-            )
+            move = self.init_invoice(move_type)
 
             self.assertTrue(self.bank_journals not in move.suitable_journal_ids)
 
     def test_valid_type(self):
-        move = self.init_invoice("entry", products=self.product_a + self.product_b)
+        move = self.init_invoice("entry")
 
         self.assertTrue(self.bank_journals not in move.suitable_journal_ids)
