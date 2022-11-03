@@ -21,6 +21,6 @@ class AccountPaymentBetterMatching(models.TransientModel):
         records |= self.matched_move_line_ids
 
         if self.partial_reconcile:
-            records.sudo().with_delay().partial_reconcile_queued(self.move_line_id)
+            records.sudo().with_delay().partial_reconcile(self.move_line_id)
         else:
-            records.sudo().with_delay().reconcile_queued()
+            records.sudo().with_delay().reconcile()
