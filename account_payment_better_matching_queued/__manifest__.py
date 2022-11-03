@@ -8,7 +8,7 @@
     "license": "Other proprietary",
     "depends": [
         "account_payment_better_matching",
-        "account_move_line_reconcile_queued",
+        # "account_move_line_reconcile_queued",
     ],
     "data": [
         "wizards/account_payment_better_matching.xml",

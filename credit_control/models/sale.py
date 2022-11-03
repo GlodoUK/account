@@ -5,10 +5,23 @@ from odoo.tools import float_compare, float_round
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    credit_control_hold = fields.Many2one("mail.activity")
+    skip_credit_control_rules = fields.Boolean(string="Skip Credit Rules", copy=False)
+
     def action_confirm(self):
         for record in self:
-            record._check_credit_control()
-        return super(SaleOrder, self).action_confirm()
+            context = {}
+            if record.skip_credit_control_rules:
+                context = {"skip_check_credit_control": True}
+            if record.credit_control_hold:
+                return
+            else:
+                if record.with_context(**context)._check_credit_control():
+                    return
+                else:
+                    confirmed_order = super(SaleOrder, self).action_confirm()
+                    record.skip_credit_control_rules = False
+                    return confirmed_order
 
     def _check_credit_control(self, events=None):
         self.ensure_one()
@@ -25,7 +38,13 @@ class SaleOrder(models.Model):
         partner_id = self.partner_id.commercial_partner_id
 
         if not partner_id.credit_control_policy_id:
-            return
+            credit_control = self.env["credit.control.policy"].search(
+                [("default", "=", True)]
+            )
+            if credit_control:
+                partner_id.credit_control_policy_id = credit_control.id
+            else:
+                return
 
         return partner_id.sudo().credit_control_policy_id.check_rules(
             events, partner_id, self

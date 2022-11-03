@@ -1,12 +1,9 @@
 from odoo import models
 
-from odoo.addons.queue_job.job import job
-
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    @job(default_channel="root.account_move_line_reconcile_queued")
     def partial_reconcile_queued(
         self, payment_move, writeoff_acc_id=False, writeoff_journal_id=False
     ):
