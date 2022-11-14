@@ -7,7 +7,7 @@ from odoo import api, fields, models
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
-    quarter = fields.Char(string="Quarter", compute="_compute_quarter", store=True)
+    quarter = fields.Char(compute="_compute_quarter", store=True)
 
     @api.depends("date_order")
     def _compute_quarter(self):
