@@ -5,6 +5,7 @@ from odoo.tools import float_is_zero
 
 class AccountPaymentBetterMatching(models.TransientModel):
     _name = "account.payment.better.matching"
+    _description = "Account Payment - Better Matching Wizard"
 
     payment_id = fields.Many2one(
         "account.payment", domain=[("move_reconciled", "=", False)], required=True
