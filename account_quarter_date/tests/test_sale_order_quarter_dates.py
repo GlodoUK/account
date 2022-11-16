@@ -40,7 +40,7 @@ class TestSaleOrderQuarterDates(TestCommon):
                 ],
             }
         )
-        self.assertEqual(sale_order_id.quarter, "Q1 2019/2019")
+        self.assertEqual(sale_order_id.quarter, "2019/2019 Q1")
 
     def test_quarter_date_q3(self):
         self.company_id = self.env.ref("base.main_company")
@@ -77,5 +77,5 @@ class TestSaleOrderQuarterDates(TestCommon):
         )
         self.assertEqual(
             sale_order_id.quarter,
-            "Q3 {}{}{}".format(self.previous_year - 1, "/", self.previous_year),
+            "{}{}{} Q3".format(self.previous_year - 1, "/", self.previous_year),
         )

@@ -45,13 +45,13 @@ class SaleOrder(models.Model):
                 # Check the month when the date_order falls
 
                 if record.date_order.month in [i.month for i in q1]:
-                    record.quarter = "Q1 {}".format(quarter_year)
+                    record.quarter = "{} Q1".format(quarter_year)
                 elif record.date_order.month in [i.month for i in q2]:
-                    record.quarter = "Q2 {}".format(quarter_year)
+                    record.quarter = "{} Q2".format(quarter_year)
                 elif record.date_order.month in [i.month for i in q3]:
-                    record.quarter = "Q3 {}".format(quarter_year)
+                    record.quarter = "{} Q3".format(quarter_year)
                 elif record.date_order.month in [i.month for i in q4]:
-                    record.quarter = "Q4 {}".format(quarter_year)
+                    record.quarter = "{} Q4".format(quarter_year)
                 else:
                     record.quarter = False
             else:
