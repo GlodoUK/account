@@ -19,7 +19,7 @@ class TestPermissions(AccountTestInvoicingCommon):
             "account_move_restrict_reset_to_draft.group_account_move_button_draft"
         )
 
-        self.invoice.button_post()
+        self.invoice.action_post()
         with self.assertRaises(UserError):
             self.invoice.button_draft()
 
@@ -28,5 +28,5 @@ class TestPermissions(AccountTestInvoicingCommon):
             "account_move_restrict_reset_to_draft.group_account_move_button_draft"
         )
 
-        self.invoice.button_post()
+        self.invoice.action_post()
         self.invoice.button_draft()
