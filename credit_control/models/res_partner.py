@@ -33,6 +33,7 @@ class ResPartner(models.Model):
         if commercial_partner_ids:
             tables, where_clause, where_params = (
                 self.env["account.move.line"]
+                .sudo()
                 .with_context(company_id=self.env.company.id)
                 ._query_get()
             )
