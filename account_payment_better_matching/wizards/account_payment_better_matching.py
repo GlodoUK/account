@@ -25,6 +25,11 @@ class AccountPaymentBetterMatching(models.TransientModel):
         related="payment_id.partner_id", string="Payment Partner", store=False
     )
 
+    commercial_partner_id = fields.Many2one(
+        related="payment_id.partner_id.commercial_partner_id",
+        store=False,
+    )
+
     mode = fields.Selection(related="payment_id.partner_type", store=False)
 
     move_line_id = fields.Many2one(
@@ -69,22 +74,6 @@ class AccountPaymentBetterMatching(models.TransientModel):
     amount_unmatched = fields.Monetary(
         compute="_compute_matched_total_signed", currency_field="company_currency_id"
     )
-
-    """
-    @api.onchange("move_line_id")
-    def _onchange_move_line_id(self):
-        domain = [
-            ('partner_id', '=', self.partner_id.id),
-            ('reconciled', '=', False),
-            ('account_id', '=', self.account_id.id),
-            ('id', '!=', self.move_line_id.id)
-        ]
-        if self.move_line_id.credit:
-            domain += [("debit",">",0)]
-        else:
-            domain += [("credit",">",0)]
-        return {'domain':{'matched_move_line_ids': domain}}
-    """
 
     @api.onchange("partial_reconcile", "matched_move_line_ids")
     def _update_override_amounts(self):
