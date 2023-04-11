@@ -70,7 +70,7 @@
                                 widget="many2many_list"
                                 readonly="0"
                                 options="{'no_quick_create':True}"
-                                domain="[('move_id.state', '=', 'posted'),('partner_id', '=', partner_id), ('amount_residual', '!=', 0), ('id', '!=', move_line_id),('account_id', '=', account_id)]"
+                                domain="[('move_id.state', '=', 'posted'),('partner_id.commercial_partner_id', '=', commercial_partner_id), ('amount_residual', '!=', 0), ('id', '!=', move_line_id), ('account_id', '=', account_id)]"
                                 context="{
                                 'tree_view_ref': 'account_payment_better_matching.account_move_line_tree',
                                 'search_view_ref': 'account_payment_better_matching.account_move_line_search'
@@ -113,6 +113,7 @@
                     <page string="Other Information">
                         <group>
                             <field name="partner_id" />
+                            <field name="commercial_partner_id" />
                             <field name="move_line_id" />
                             <field name="account_id" />
                         </group>
