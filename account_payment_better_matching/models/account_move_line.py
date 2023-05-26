@@ -17,6 +17,8 @@ class AccountMoveLine(models.Model):
         partial_values = []
         payment_line = self._context.get("payment_move_line")
         for line in self:
+            if line == payment_line:
+                continue
             if line.reconciled:
                 continue
             override_amount = line.reconcile_override
