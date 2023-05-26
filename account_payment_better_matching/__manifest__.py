@@ -1,5 +1,5 @@
 {
-    "version": "15.0.1.0.0",
+    "version": "15.0.1.1.0",
     "name": "account_payment_better_matching",
     "summary": "A better interface for bulk, but manual payment matching",
     "category": "Finance",

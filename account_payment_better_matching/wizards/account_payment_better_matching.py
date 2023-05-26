@@ -78,7 +78,22 @@ class AccountPaymentBetterMatching(models.TransientModel):
     @api.onchange("partial_reconcile", "matched_move_line_ids")
     def _update_override_amounts(self):
         for line in self.matched_move_line_ids:
+            if not self.partial_reconcile:
+                line.reconcile_override = 0.0
+                continue
+
+            abs_residual = abs(line.amount_residual)
+            abs_override = abs(line.reconcile_override)
+
             if line.reconcile_override == 0:
+                line.reconcile_override = line.amount_residual
+
+            if abs_override > abs_residual:
+                line.reconcile_override = line.amount_residual
+
+            if (line.amount_residual < 0 and line.reconcile_override > 0) or (
+                line.amount_residual > 0 and line.reconcile_override < 0
+            ):
                 line.reconcile_override = line.amount_residual
 
     @api.depends("matched_move_line_ids", "partial_reconcile")
@@ -135,6 +150,8 @@ class AccountPaymentBetterMatching(models.TransientModel):
             )
 
     def process(self):
+        self.ensure_one()
+
         if not self.partner_id:
             raise UserError(_("Payments without a partner can't be matched"))
 
@@ -157,3 +174,6 @@ class AccountPaymentBetterMatching(models.TransientModel):
             }
         )
         records.with_context(**context).reconcile()
+
+        if self.partial_reconcile:
+            records.write({"reconcile_override": 0.0})
