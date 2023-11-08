@@ -31,6 +31,8 @@ class TestCreditControlOverLimit(CreditControlTestCase):
             }
         )
 
+        self.assertEqual(self.partner_id.credit_control_used, 0)
+
         sale_order_id = self.env["sale.order"].create(
             {
                 "partner_id": self.partner_id.id,
@@ -84,6 +86,8 @@ class TestCreditControlOverLimit(CreditControlTestCase):
             }
         )
 
+        self.assertEqual(self.partner_id.credit_control_used, 0)
+
         sale_order_id = self.env["sale.order"].create(
             {
                 "partner_id": self.partner_id.id,
@@ -108,3 +112,6 @@ class TestCreditControlOverLimit(CreditControlTestCase):
         )
 
         sale_order_id.action_confirm()
+        self.partner_id._compute_credit_control_used()
+
+        self.assertEqual(self.partner_id.credit_control_used, 194.96)

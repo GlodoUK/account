@@ -33,10 +33,15 @@ class ResPartner(models.Model):
         if commercial_partner_ids:
             tables, where_clause, where_params = (
                 self.env["account.move.line"]
-                .sudo()
-                .with_context(company_id=self.env.company.id)
-                ._query_get()
+                ._where_calc(
+                    [
+                        ("parent_state", "=", "posted"),
+                        ("company_id", "=", self.env.company.id),
+                    ]
+                )
+                .get_sql()
             )
+
             where_params = [tuple(commercial_partner_ids)] + where_params
             if where_clause:
                 where_clause = "AND " + where_clause
@@ -47,22 +52,22 @@ class ResPartner(models.Model):
                 SELECT
                     account_move_line__move_id.commercial_partner_id,
                     SUM(case
-                        when act.type = 'receivable' then
+                        when a.account_type = 'asset_receivable' then
                             account_move_line.amount_residual
-                        else
+                        when a.account_type = 'liability_payable' then
                             account_move_line.amount_residual * -1
+                        else
+                            0
                     end)
                 FROM {tables}
                 INNER JOIN account_move AS account_move_line__move_id ON
                     (account_move_line__move_id.id=account_move_line.move_id)
                 LEFT JOIN account_account a ON
                     (account_move_line.account_id=a.id)
-                LEFT JOIN account_account_type act ON
-                    (a.user_type_id=act.id)
                 WHERE
-                    act.type IN (
-                        'receivable',
-                        'payable'
+                    a.account_type IN (
+                        'asset_receivable',
+                        'liability_payable'
                     )
                     AND account_move_line__move_id.commercial_partner_id IN %s
                     AND account_move_line.reconciled IS NOT TRUE

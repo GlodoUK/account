@@ -7,7 +7,7 @@
     "license": "Other proprietary",
     "website": "https://github.com/GlodoUK/account",
     "category": "Invoicing &amp; Payments",
-    "version": "15.0.1.0.0",
+    "version": "16.0.1.0.0",
     "depends": ["account", "sale", "mail"],
     "data": [
         "data/groups.xml",
@@ -17,5 +17,4 @@
         "views/res_partner.xml",
         "views/sale.xml",
     ],
-    "demo": [],
 }
