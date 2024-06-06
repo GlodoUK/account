@@ -25,19 +25,13 @@ class SaleOrder(models.Model):
                     return confirmed_order
 
     def _check_credit_control(self, events=None):
-        print("++++++++++++++++++++++++++++++++++++++++++++++")
-        print("Check credit control")
-        print("++++++++++++++++++++++++++++++++++++++++++++++")
         self.ensure_one()
 
         if not events:
             events = ["confirm_edit", "confirm"]
 
-        # if self.website_id:
-        #     print("+++++++++++++++++++++++++++++++")
-        #     print(self._context)
-        #     print("Website order")
-        #     return
+        if self.website_id:
+            return
 
         if self._context.get("skip_check_credit_control", False):
             return

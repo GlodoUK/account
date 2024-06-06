@@ -140,8 +140,6 @@ class CreditControlRule(models.Model):
         return False
 
     def _check_rule_over_limit(self, partner_id, sale_id):
-        print("===========================================")
-        print(partner_id.credit, partner_id.credit_limit)
         if -1 * partner_id.credit > partner_id.credit_limit:
             return True
 
