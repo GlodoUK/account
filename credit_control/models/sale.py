@@ -1,6 +1,4 @@
-from odoo.tools import float_compare, float_round
-
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class SaleOrder(models.Model):

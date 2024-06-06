@@ -14,6 +14,5 @@ class ResPartner(models.Model):
         "credit.control.policy",
         required=False,
         index=True,
-        groups='account.group_account_invoice,account.group_account_readonly',
+        groups="account.group_account_invoice,account.group_account_readonly",
     )
-

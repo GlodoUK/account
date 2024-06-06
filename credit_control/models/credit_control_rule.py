@@ -1,7 +1,6 @@
+from odoo import _, api, exceptions, fields, models
 from odoo.tools import float_compare
 from odoo.tools.safe_eval import pytz, safe_eval
-
-from odoo import _, api, exceptions, fields, models
 
 
 class CreditControlRule(models.Model):
@@ -168,7 +167,6 @@ class CreditControlRule(models.Model):
 
     def _check_rule_proforma(self, partner_id, sale_id):
         if sale_id.payment_term_id:
-
             proforma_count = self.env["account.payment.term.line"].search_count(
                 [
                     ("payment_id", "=", sale_id.payment_term_id.id),
