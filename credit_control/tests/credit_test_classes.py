@@ -3,7 +3,7 @@ from odoo.tests.common import TransactionCase
 
 class CreditControlTestCase(TransactionCase):
     def setUp(self):
-        super(CreditControlTestCase, self).setUp()
+        super().setUp()
 
         self.partner_id = self.env["res.partner"].create({"name": "Test Customer"})
 
