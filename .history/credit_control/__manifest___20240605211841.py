@@ -8,7 +8,7 @@
     "website": "https://github.com/GlodoUK/account",
     "category": "Invoicing &amp; Payments",
     "version": "17.0.0.0.0",
-    "depends": ["account", "sale", "mail", "website_sale"],
+    "depends": ["account", "sale", "mail"],
     "data": [
         "data/mail_activity.xml",
         "security/ir.model.access.csv",
