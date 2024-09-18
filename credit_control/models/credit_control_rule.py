@@ -8,22 +8,10 @@ class CreditControlRule(models.Model):
     _description = "Hold Policy Rules"
     _order = "sequence asc"
 
-    def name_get(self):
-        res = []
-
+    @api.depends("policy_id", "classification_id", "name")
+    def _compute_display_name(self):
         for record in self:
-            res.append(
-                (
-                    record.id,
-                    "{} > {}/{}".format(
-                        record.policy_id.name,
-                        record.classification_id.name,
-                        record.name,
-                    ),
-                )
-            )
-
-        return res
+            record.display_name = f"{record.policy_id.name} > {record.classification_id.name}/{record.name}"
 
     classification_id = fields.Many2one(
         "credit.control.classification",
