@@ -8,22 +8,10 @@ class CreditControlRule(models.Model):
     _description = "Hold Policy Rules"
     _order = "sequence asc"
 
-    def name_get(self):
-        res = []
-
+    @api.depends("policy_id", "classification_id", "name")
+    def _compute_display_name(self):
         for record in self:
-            res.append(
-                (
-                    record.id,
-                    "{} > {}/{}".format(
-                        record.policy_id.name,
-                        record.classification_id.name,
-                        record.name,
-                    ),
-                )
-            )
-
-        return res
+            record.display_name = f"{record.policy_id.name} > {record.classification_id.name}/{record.name}"
 
     classification_id = fields.Many2one(
         "credit.control.classification",
@@ -130,7 +118,8 @@ class CreditControlRule(models.Model):
 
     def _check_rule_partner_domain(self, partner_id, _sale_id):
         if self.partner_domain:
-            domain = safe_eval(self.partner_domain) + [("id", "=", partner_id.id)]
+            domain = safe_eval(self.partner_domain) + \
+                [("id", "=", partner_id.id)]
             result = self.env["res.partner"].search_count(domain) > 0
 
             if result:
