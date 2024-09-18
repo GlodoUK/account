@@ -118,8 +118,7 @@ class CreditControlRule(models.Model):
 
     def _check_rule_partner_domain(self, partner_id, _sale_id):
         if self.partner_domain:
-            domain = safe_eval(self.partner_domain) + \
-                [("id", "=", partner_id.id)]
+            domain = safe_eval(self.partner_domain) + [("id", "=", partner_id.id)]
             result = self.env["res.partner"].search_count(domain) > 0
 
             if result:
