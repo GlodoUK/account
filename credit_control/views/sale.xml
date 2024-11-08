@@ -26,6 +26,9 @@
                     text="Sale Held"
                 />
             </xpath>
+            <xpath expr="//group[@name='sale_info']" position="inside">
+                <field name="skip_credit_control_rules" />
+            </xpath>
         </field>
     </record>
     <record id="credit_control_sale_order_view_search_inherit_sale" model="ir.ui.view">
