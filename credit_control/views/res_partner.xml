@@ -11,7 +11,7 @@
                     string="Credit Control"
                     groups="credit_control.group_credit_control_user"
                 >
-                    <field name="credit_control_policy_id" readonly="1" />
+                    <field name="credit_control_policy_id" />
                     <field
                         name="credit_control_limit"
                         attrs="{'invisible': [('credit_control_policy_id', '=', False)]}"
