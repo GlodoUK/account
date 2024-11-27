@@ -10,18 +10,16 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         for record in self:
-            context = {}
-            if record.skip_credit_control_rules:
-                context = {"skip_check_credit_control": True}
-            if record.credit_control_hold:
-                return
-            else:
-                if record.with_context(**context)._check_credit_control():
-                    return
-                else:
-                    confirmed_order = super(SaleOrder, self).action_confirm()
-                    record.skip_credit_control_rules = False
-                    return confirmed_order
+            record._check_credit_control()
+        return super(
+            SaleOrder, self.with_context(skip_check_credit_control=True)
+        ).action_confirm()
+
+    def _action_cancel(self):
+        if self.credit_control_hold:
+            self.credit_control_hold.unlink()
+
+        return super()._action_cancel()
 
     def _check_credit_control(self, events=None):
         self.ensure_one()
@@ -29,28 +27,29 @@ class SaleOrder(models.Model):
         if not events:
             events = ["confirm_edit", "confirm"]
 
+        if self.skip_credit_control_rules:
+            return
+
         if self._context.get("website_order_tx", False):
             return
 
         if self._context.get("skip_check_credit_control", False):
             return
 
-        partner_id = self.partner_id.commercial_partner_id
+        partner_id = self.partner_id.sudo().commercial_partner_id
+        policy_id = partner_id.credit_control_policy_id
 
-        if not partner_id.credit_control_policy_id:
-            credit_control = self.env["credit.control.policy"].search(
-                [("default", "=", True)]
+        if not policy_id:
+            policy_id = (
+                self.env["credit.control.policy"]
+                .sudo()
+                .search([("default", "=", True)], limit=1)
             )
-            if credit_control:
-                partner_id.credit_control_policy_id = credit_control.id
-            else:
-                return
 
-        return partner_id.sudo().credit_control_policy_id.check_rules(
-            events, partner_id, self
-        )
+        if policy_id:
+            return policy_id.check_rules(events, partner_id, self)
 
-    def write(self, values):
+    def write(self, vals):
         """
         Maintaining the SOs on credit hold after update if before them was in
         """
@@ -58,7 +57,7 @@ class SaleOrder(models.Model):
         for order in self:
             before[order] = (order.amount_total, len(order.order_line))
 
-        result = super().write(values)
+        result = super().write(vals)
 
         for order in self.filtered(
             lambda r: r.state in ("sale", "done", "reserved")
