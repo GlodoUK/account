@@ -67,7 +67,7 @@ class QuarterDateMixin(models.AbstractModel):
             q3 = [start_date + relativedelta(months=+i) for i in range(6, 9)]
             q4 = [start_date + relativedelta(months=+i) for i in range(9, 12)]
 
-            # Check if date_order falls within the start and end date and set label
+            # Check if date falls within the start and end date and set label
             if start_date <= date <= end_date:
                 if start_date.year == end_date.year:
                     quarter_year = "{}".format(end_date.year)
@@ -79,8 +79,7 @@ class QuarterDateMixin(models.AbstractModel):
                 else:
                     quarter_year = "{}/{}".format(end_date.year, end_date.year + 1)
 
-            # Check the month when the date_order falls
-
+            # Check the month when the date falls
             if date.month in [i.month for i in q1]:
                 quarter = "{} Q1".format(quarter_year)
             elif date.month in [i.month for i in q2]:
