@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from odoo.tests import tagged
 
 from .common import TestCommon
@@ -7,9 +5,7 @@ from .common import TestCommon
 
 @tagged("post_install", "-at_install")
 class TestSaleOrderQuarterDates(TestCommon):
-    previous_year = datetime.now().year - 1
-
-    def test_quarter_date_q1(self):
+    def test_order_quarter_date_q1(self):
         self.company_id = self.env.ref("base.main_company")
         self.company_id.write(
             {
@@ -40,16 +36,17 @@ class TestSaleOrderQuarterDates(TestCommon):
                 ],
             }
         )
-        self.assertEqual(sale_order_id.quarter, "2019/2019 Q1")
+        self.assertEqual(sale_order_id.fiscal_quarter, "2019 Q1")
+        self.assertEqual(sale_order_id.fiscal_year, 2019)
 
-    def test_quarter_date_q3(self):
+    def test_order_quarter_date_q3(self):
         self.company_id = self.env.ref("base.main_company")
         # get current year
         self.company_id.write(
             {
                 "fiscalyear_last_month": "4",
                 "fiscalyear_last_day": 30,
-                "fiscalyear_lock_date": "{}-04-30".format(self.previous_year),
+                "fiscalyear_lock_date": False,
             }
         )
 
@@ -76,6 +73,52 @@ class TestSaleOrderQuarterDates(TestCommon):
             }
         )
         self.assertEqual(
-            sale_order_id.quarter,
+            sale_order_id.fiscal_quarter,
             "{}{}{} Q3".format(self.previous_year - 1, "/", self.previous_year),
         )
+        self.assertEqual(sale_order_id.fiscal_year, self.previous_year - 1)
+
+    def test_account_move_quarter_date_q1(self):
+        self.company_id = self.env.ref("base.main_company")
+        self.company_id.write(
+            {
+                "fiscalyear_last_month": "12",
+                "fiscalyear_last_day": 31,
+                "fiscalyear_lock_date": False,
+            }
+        )
+        account_move_id = self.model_account_move.create(
+            {
+                "partner_id": self.partner_id.id,
+                "invoice_date": "2019-01-01",
+                "journal_id": self.env.ref("account.data_account_type_receivable").id,
+                "move_type": "out_invoice",
+            }
+        )
+        self.assertEqual(account_move_id.fiscal_quarter, "2019 Q1")
+        self.assertEqual(account_move_id.fiscal_year, 2019)
+
+    def test_account_move_quarter_date_q3(self):
+        self.company_id = self.env.ref("base.main_company")
+        # get current year
+        self.company_id.write(
+            {
+                "fiscalyear_last_month": "4",
+                "fiscalyear_last_day": 30,
+                "fiscalyear_lock_date": False,
+            }
+        )
+
+        account_move_id = self.model_account_move.create(
+            {
+                "partner_id": self.partner_id.id,
+                "invoice_date": "{}-01-01".format(self.previous_year),
+                "journal_id": self.env.ref("account.data_account_type_receivable").id,
+                "move_type": "out_invoice",
+            }
+        )
+        self.assertEqual(
+            account_move_id.fiscal_quarter,
+            "{}{}{} Q3".format(self.previous_year - 1, "/", self.previous_year),
+        )
+        self.assertEqual(account_move_id.fiscal_year, self.previous_year - 1)
