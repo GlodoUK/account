@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from odoo.tests import tagged
 
 from .common import TestCommon
@@ -7,8 +5,6 @@ from .common import TestCommon
 
 @tagged("post_install", "-at_install")
 class TestSaleOrderQuarterDates(TestCommon):
-    previous_year = datetime.now().year - 1
-
     def test_order_quarter_date_q1(self):
         self.company_id = self.env.ref("base.main_company")
         self.company_id.write(
@@ -50,7 +46,7 @@ class TestSaleOrderQuarterDates(TestCommon):
             {
                 "fiscalyear_last_month": "4",
                 "fiscalyear_last_day": 30,
-                "fiscalyear_lock_date": "{}-04-30".format(self.previous_year),
+                "fiscalyear_lock_date": False,
             }
         )
 

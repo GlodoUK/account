@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from odoo.tests.common import TransactionCase
 
 
@@ -9,3 +11,4 @@ class TestCommon(TransactionCase):
         self.model_sale_order = self.env["sale.order"]
         self.model_sale_order_line = self.env["sale.order.line"]
         self.model_account_move = self.env["account.move"]
+        self.previous_year = datetime.now().year - 1

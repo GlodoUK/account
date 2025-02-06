@@ -7,6 +7,7 @@
     "data": [
         "views/sale_order.xml",
         "views/account_move.xml",
+        "views/crm.xml",
     ],
     "license": "Other proprietary",
     "author": "Glo Networks",

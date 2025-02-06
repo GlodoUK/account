@@ -1,2 +1,2 @@
 from . import common
-from . import test_sale_order_quarter_dates
+from . import test_quarter_dates
