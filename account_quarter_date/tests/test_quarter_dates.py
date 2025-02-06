@@ -36,7 +36,7 @@ class TestSaleOrderQuarterDates(TestCommon):
                 ],
             }
         )
-        self.assertEqual(sale_order_id.quarter, "2019 Q1")
+        self.assertEqual(sale_order_id.fiscal_quarter, "2019 Q1")
         self.assertEqual(sale_order_id.fiscal_year, 2019)
 
     def test_order_quarter_date_q3(self):
@@ -73,7 +73,7 @@ class TestSaleOrderQuarterDates(TestCommon):
             }
         )
         self.assertEqual(
-            sale_order_id.quarter,
+            sale_order_id.fiscal_quarter,
             "{}{}{} Q3".format(self.previous_year - 1, "/", self.previous_year),
         )
         self.assertEqual(sale_order_id.fiscal_year, self.previous_year - 1)
@@ -95,7 +95,7 @@ class TestSaleOrderQuarterDates(TestCommon):
                 "move_type": "out_invoice",
             }
         )
-        self.assertEqual(account_move_id.quarter, "2019 Q1")
+        self.assertEqual(account_move_id.fiscal_quarter, "2019 Q1")
         self.assertEqual(account_move_id.fiscal_year, 2019)
 
     def test_account_move_quarter_date_q3(self):
@@ -118,7 +118,7 @@ class TestSaleOrderQuarterDates(TestCommon):
             }
         )
         self.assertEqual(
-            account_move_id.quarter,
+            account_move_id.fiscal_quarter,
             "{}{}{} Q3".format(self.previous_year - 1, "/", self.previous_year),
         )
         self.assertEqual(account_move_id.fiscal_year, self.previous_year - 1)
