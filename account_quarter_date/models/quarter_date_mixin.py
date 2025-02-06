@@ -25,6 +25,9 @@ class QuarterDateMixin(models.AbstractModel):
             record.quarter_date_field = "create_date"
 
     def _compute_fiscal_quarter(self):
+        # Note: When inheriting this method, make sure to include an @api.depends
+        # decorator to trigger it for the same field as quarter_date_field
+        # and super() to call this
         company = self.env.company
 
         for record in self:
