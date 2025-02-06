@@ -20,7 +20,7 @@ class QuarterDateMixin(models.AbstractModel):
 
     def _compute_quarter_date_field(self):
         # Abstract method to define the field to use for the quarter date
-        # Should be overwritten in the model if the field is not 'date'
+        # Should be overwritten in the model if the field is not 'create_date'
         for record in self:
             record.quarter_date_field = "create_date"
 
