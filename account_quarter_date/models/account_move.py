@@ -26,8 +26,14 @@ class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
     fiscal_quarter = fields.Char(
-        related="move_id.fiscal_quarter", store=True, string="Fiscal Quarter"
+        related="move_id.fiscal_quarter",
+        store=True,
+        string="Fiscal Quarter",
+        index=True,
     )
     fiscal_year = fields.Integer(
-        related="move_id.fiscal_year", store=True, string="Fiscal Year (Start Year)"
+        related="move_id.fiscal_year",
+        store=True,
+        string="Fiscal Year (Start Year)",
+        index=True,
     )
