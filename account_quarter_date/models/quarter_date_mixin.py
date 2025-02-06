@@ -28,8 +28,6 @@ class QuarterDateMixin(models.AbstractModel):
         # Note: When inheriting this method, make sure to include an @api.depends
         # decorator to trigger it for the same field as quarter_date_field
         # and super() to call this
-        company = self.env.company
-
         for record in self:
             if not record.quarter_date_field or not hasattr(
                 record, str(record.quarter_date_field)
@@ -39,6 +37,13 @@ class QuarterDateMixin(models.AbstractModel):
             date = getattr(record, str(record.quarter_date_field))
             if not date:
                 continue
+
+            if hasattr(record, "company_id"):
+                company = record.company_id
+            elif hasattr(record, "company"):
+                company = record.company
+            else:
+                company = self.env.company
 
             fiscalyear_last_month = company.fiscalyear_last_month
             fiscalyear_last_day = company.fiscalyear_last_day
