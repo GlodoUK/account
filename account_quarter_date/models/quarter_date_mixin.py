@@ -35,6 +35,8 @@ class QuarterDateMixin(models.AbstractModel):
         # decorator to trigger it for the same field as quarter_date_field
         # and super() to call this
         for record in self:
+            record.fiscal_quarter = False
+            record.fiscal_year = False
             if not record.quarter_date_field or not hasattr(
                 record, str(record.quarter_date_field)
             ):
