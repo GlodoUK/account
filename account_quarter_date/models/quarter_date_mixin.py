@@ -12,10 +12,16 @@ class QuarterDateMixin(models.AbstractModel):
         compute="_compute_quarter_date_field",
     )
     fiscal_quarter = fields.Char(
-        compute="_compute_fiscal_quarter", store=True, string="Fiscal Quarter"
+        compute="_compute_fiscal_quarter",
+        store=True,
+        string="Fiscal Quarter",
+        index=True,
     )
     fiscal_year = fields.Integer(
-        compute="_compute_fiscal_quarter", store=True, string="Fiscal Year (Start Year)"
+        compute="_compute_fiscal_quarter",
+        store=True,
+        string="Fiscal Year (Start Year)",
+        index=True,
     )
 
     def _compute_quarter_date_field(self):
