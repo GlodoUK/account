@@ -46,11 +46,13 @@ class QuarterDateMixin(models.AbstractModel):
             if not date:
                 continue
 
+            company = False
             if hasattr(record, "company_id"):
                 company = record.company_id
             elif hasattr(record, "company"):
                 company = record.company
-            else:
+
+            if not company:
                 company = self.env.company
 
             fiscalyear_last_month = company.fiscalyear_last_month
